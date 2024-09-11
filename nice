@@ -1,0 +1,140 @@
+-- Create the main screen GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MobileActionGUI"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+-- Create the main frame for the UI
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 350, 0, 400) -- Adjust the size as needed for mobile
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -200)
+MainFrame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Visible = true
+
+-- Add UICorner for rounded edges
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+-- Create the ScrollingFrame to hold the buttons
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Size = UDim2.new(1, 0, 1, 0)
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 3, 0) -- Adjust CanvasSize for more scrolling area
+ScrollingFrame.ScrollBarThickness = 8
+ScrollingFrame.Position = UDim2.new(0, 0, 0, 0)
+ScrollingFrame.BackgroundTransparency = 1
+ScrollingFrame.Parent = MainFrame
+
+-- Helper function to create buttons
+local function createButton(name, text, position, callback)
+    local Button = Instance.new("TextButton")
+    Button.Name = name
+    Button.Text = text
+    Button.Size = UDim2.new(0, 320, 0, 50)
+    Button.Position = position
+    Button.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.BorderColor3 = Color3.fromRGB(255, 0, 0)
+    Button.Parent = ScrollingFrame
+    Button.Font = Enum.Font.SourceSans
+    Button.TextSize = 18 -- Adjust text size for better readability on mobile
+
+    Button.MouseButton1Click:Connect(callback)
+end
+
+-- Close GUI button with confirmation
+local closeConfirmed = false
+local function closeGUI()
+    if not closeConfirmed then
+        closeConfirmed = true
+        ScrollingFrame:FindFirstChild("CloseGUIButton").Text = "Click Again to Confirm"
+        wait(2)
+        closeConfirmed = false
+        ScrollingFrame:FindFirstChild("CloseGUIButton").Text = "Close GUI"
+    else
+        ScreenGui:Destroy()
+    end
+end
+
+-- Play and stop sound for all players
+local soundPlaying = false
+local sound = Instance.new("Sound", workspace)
+sound.SoundId = "rbxassetid://6427919074" -- Example sound ID
+sound.Volume = 5
+
+local function toggleSound()
+    if not soundPlaying then
+        sound:Play()
+        soundPlaying = true
+    else
+        sound:Stop()
+        soundPlaying = false
+    end
+end
+
+-- Function to set all blocks on fire
+local function setBlocksOnFire()
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and not obj:FindFirstChild("Fire") then
+            local fire = Instance.new("Fire", obj)
+            fire.Size = 10
+            fire.Heat = 25
+        end
+    end
+end
+
+-- Function to give player full health
+local function healPlayer()
+    local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("Humanoid") then
+        player.Character.Humanoid.Health = player.Character.Humanoid.MaxHealth
+    end
+end
+
+-- Function to toggle zero gravity for the player
+local zeroGravity = false
+local function toggleZeroGravity()
+    local player = game.Players.LocalPlayer
+    if player.Character and player.Character:FindFirstChild("HumanoidRootPart") then
+        zeroGravity = not zeroGravity
+        player.Character.HumanoidRootPart.Anchored = zeroGravity
+    end
+end
+
+-- Function to reset player position
+local function resetPlayer()
+    local player = game.Players.LocalPlayer
+    if player.Character then
+        player.Character:BreakJoints() -- Respawns the player
+    end
+end
+
+-- Creating buttons with the specified actions
+createButton("CloseGUIButton", "Close GUI", UDim2.new(0, 10, 0, 10), closeGUI)
+createButton("PlaySoundButton", "Play Sound", UDim2.new(0, 10, 0, 70), toggleSound)
+createButton("FireButton", "Fire Blocks", UDim2.new(0, 10, 0, 130), setBlocksOnFire)
+createButton("HealButton", "Heal", UDim2.new(0, 10, 0, 190), healPlayer)
+createButton("ZeroGravityButton", "Zero Gravity", UDim2.new(0, 10, 0, 250), toggleZeroGravity)
+createButton("ResetButton", "Reset Player", UDim2.new(0, 10, 0, 310), resetPlayer)
+
+-- Create the Open/Close button outside the main frame
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Text = "Open/Close"
+ToggleButton.Size = UDim2.new(0, 100, 0, 50)
+ToggleButton.Position = UDim2.new(0, 10, 0, 10) -- Adjust position as needed
+ToggleButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.BorderColor3 = Color3.fromRGB(255, 0, 0)
+ToggleButton.Parent = ScreenGui
+
+-- Toggle visibility of the MainFrame
+local guiVisible = true
+
+ToggleButton.MouseButton1Click:Connect(function()
+    guiVisible = not guiVisible
+    MainFrame.Visible = guiVisible
+end)
