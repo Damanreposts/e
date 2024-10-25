@@ -1,0 +1,74 @@
+-- Paste this code into a GitHub Gist, then use a loadstring to execute it in Roblox
+
+local Players = game:GetService("Players")
+
+-- Create GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "FlingGui"
+ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 300, 0, 150)
+MainFrame.Position = UDim2.new(0.5, -150, 0.5, -75)
+MainFrame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+MainFrame.Parent = ScreenGui
+
+local UICorner = Instance.new("UICorner")
+UICorner.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.BackgroundTransparency = 1
+Title.Text = "OP Fling GUI FE v1"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.Font = Enum.Font.SourceSansBold
+Title.TextSize = 20
+Title.Parent = MainFrame
+
+local UsernameBox = Instance.new("TextBox")
+UsernameBox.PlaceholderText = "Enter username to fling"
+UsernameBox.Size = UDim2.new(0.9, 0, 0, 30)
+UsernameBox.Position = UDim2.new(0.05, 0, 0.35, 0)
+UsernameBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+UsernameBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+UsernameBox.Parent = MainFrame
+
+local UICornerBox = Instance.new("UICorner")
+UICornerBox.Parent = UsernameBox
+
+local FlingButton = Instance.new("TextButton")
+FlingButton.Text = "Fling em"
+FlingButton.Size = UDim2.new(0.9, 0, 0, 30)
+FlingButton.Position = UDim2.new(0.05, 0, 0.65, 0)
+FlingButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+FlingButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+FlingButton.Font = Enum.Font.SourceSansBold
+FlingButton.TextSize = 18
+FlingButton.Parent = MainFrame
+
+local UICornerButton = Instance.new("UICorner")
+UICornerButton.Parent = FlingButton
+
+-- Function to fling the player
+local function flingPlayer(username)
+    local playerToFling = Players:FindFirstChild(username)
+    if playerToFling and playerToFling.Character and playerToFling.Character:FindFirstChild("HumanoidRootPart") then
+        local rootPart = playerToFling.Character.HumanoidRootPart
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.Velocity = Vector3.new(0, 100, 0) -- Fling upward
+        bodyVelocity.MaxForce = Vector3.new(10000, 10000, 10000)
+        bodyVelocity.Parent = rootPart
+        wait(0.5)
+        bodyVelocity:Destroy() -- Clean up after fling
+    else
+        warn("Player not found or unavailable.")
+    end
+end
+
+-- Button click event
+FlingButton.MouseButton1Click:Connect(function()
+    local username = UsernameBox.Text
+    if username ~= "" then
+        flingPlayer(username)
+    end
+end)
